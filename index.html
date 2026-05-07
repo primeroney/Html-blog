@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DevPulse — Tech Blog</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --cream: #faf8f4;
+      --white: #ffffff;
+      --ink: #0d0d0d;
+      --ink-soft: #3d3d3d;
+      --ink-muted: #6b6b6b;
+      --accent: #e8401c;
+      --accent-light: #fdf1ee;
+      --border: #e8e4de;
+      --yellow: #f5c842;
+      --font-display: 'Playfair Display', Georgia, serif;
+      --font-body: 'DM Sans', system-ui, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+      --max-w: 1160px;
+      --radius: 10px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--font-body);
+      background: var(--cream);
+      color: var(--ink);
+      font-size: 16px;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: inherit; text-decoration: none; }
+
+    /* NAV */
+    .navbar {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(250,248,244,0.95);
+      backdrop-filter: blur(12px);
+      border-bottom: 1.5px solid var(--border);
+    }
+    .nav-inner {
+      max-width: var(--max-w); margin: 0 auto; padding: 0 24px;
+      height: 58px; display: flex; align-items: center; justify-content: space-between;
+    }
+    .nav-logo {
+      display: flex; align-items: center; gap: 9px;
+      font-family: var(--font-display); font-weight: 700; font-size: 1.25rem; letter-spacing: -0.5px;
+    }
+    .logo-hex { color: var(--accent); font-size: 1.3rem; }
+    .nav-links { display: flex; gap: 28px; }
+    .nav-link { font-weight: 500; font-size: 0.88rem; color: var(--ink-soft); transition: color .2s; cursor: pointer; }
+    .nav-link:hover, .nav-link.active { color: var(--accent); }
+
+    /* PAGES */
+    .page { display: none; }
+    .page.active { display: block; }
+
+    /* HERO */
+    .hero {
+      background: var(--ink); color: var(--cream); overflow: hidden;
+    }
+    .hero-inner { max-width: var(--max-w); margin: 0 auto; padding: 72px 24px 52px; }
+    .hero-badge {
+      display: inline-block; background: var(--accent); color: #fff;
+      font-size: 0.7rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
+      padding: 4px 12px; border-radius: 100px; margin-bottom: 22px;
+    }
+    .hero-title {
+      font-family: var(--font-display); font-size: clamp(2.6rem, 5.5vw, 4.8rem);
+      font-weight: 900; line-height: 1.08; letter-spacing: -.03em; margin-bottom: 18px;
+    }
+    .hero-title em { font-style: italic; color: var(--yellow); }
+    .hero-sub { font-size: 1rem; color: #aaa; max-width: 480px; line-height: 1.7; }
+    .hero-ticker {
+      border-top: 1px solid #222; overflow: hidden; padding: 13px 0;
+      white-space: nowrap; margin-top: 48px;
+    }
+    .ticker-track {
+      display: inline-block; animation: ticker 30s linear infinite;
+      font-size: 0.75rem; color: #555; letter-spacing: .1em; text-transform: uppercase; font-weight: 500;
+    }
+    @keyframes ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+    /* CONTAINER */
+    .container { max-width: var(--max-w); margin: 0 auto; padding: 0 24px; }
+
+    /* SECTION */
+    .section { padding: 56px 0; }
+    .section + .section { border-top: 1.5px solid var(--border); }
+    .section-header { display: flex; align-items: center; gap: 18px; margin-bottom: 32px; }
+    .section-title { font-family: var(--font-display); font-size: 1.45rem; font-weight: 700; white-space: nowrap; letter-spacing: -.02em; }
+    .section-line { height: 1.5px; background: var(--border); flex: 1; }
+
+    /* TAGS */
+    .tag {
+      display: inline-block; background: var(--accent-light); color: var(--accent);
+      font-size: .7rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
+      padding: 3px 10px; border-radius: 100px; cursor: pointer; transition: background .2s, color .2s;
+    }
+    .tag:hover { background: var(--accent); color: #fff; }
+    .tag-list { display: flex; flex-wrap: wrap; gap: 6px; }
+    .tag--lg { font-size: .78rem; padding: 6px 15px; }
+
+    /* FEATURED GRID */
+    .featured-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; }
+    .featured-card {
+      background: var(--white); border: 1.5px solid var(--border); border-radius: var(--radius);
+      padding: 28px; display: flex; flex-direction: column; gap: 14px;
+      transition: transform .2s, box-shadow .2s, border-color .2s; cursor: pointer;
+    }
+    .featured-card:hover { transform: translateY(-3px); box-shadow: 0 6px 24px rgba(0,0,0,.09); border-color: var(--accent); }
+    .featured-card--dark {
+      background: var(--ink); color: var(--cream); border-color: transparent; grid-row: span 2;
+    }
+    .featured-card--dark .card-excerpt { color: #999; }
+    .featured-card--dark .tag { background: rgba(232,64,28,.2); color: #ff8870; }
+    .featured-card--dark .author-date, .featured-card--dark .read-time { color: #666; }
+    .featured-card--dark:hover { border-color: var(--yellow); }
+    .featured-card--dark .card-title a { color: var(--cream); }
+
+    .card-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+    .read-time { font-size: .73rem; color: var(--ink-muted); font-weight: 500; white-space: nowrap; }
+    .card-title { font-family: var(--font-display); font-size: 1.38rem; font-weight: 700; line-height: 1.22; letter-spacing: -.02em; }
+    .card-title--sm { font-size: 1.05rem; }
+    .card-title a:hover { color: var(--accent); }
+    .card-excerpt { color: var(--ink-soft); font-size: .93rem; line-height: 1.65; flex: 1; }
+    .card-excerpt--sm { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; font-size: .86rem; }
+    .card-footer {
+      display: flex; align-items: center; justify-content: space-between;
+      padding-top: 14px; border-top: 1px solid var(--border); margin-top: auto;
+    }
+    .featured-card--dark .card-footer { border-color: #222; }
+    .author { display: flex; align-items: center; gap: 10px; }
+    .avatar {
+      width: 36px; height: 36px; border-radius: 50%; background: var(--accent);
+      color: #fff; font-size: .7rem; font-weight: 700;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .avatar--sm { width: 26px; height: 26px; font-size: .6rem; }
+    .avatar--lg { width: 52px; height: 52px; font-size: .9rem; }
+    .author-name { font-size: .83rem; font-weight: 600; }
+    .author-date { font-size: .73rem; color: var(--ink-muted); }
+    .read-more { font-size: .83rem; font-weight: 600; color: var(--accent); }
+    .read-more:hover { text-decoration: underline; }
+
+    /* POSTS GRID */
+    .posts-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(268px, 1fr)); gap: 18px; }
+    .post-card {
+      background: var(--white); border: 1.5px solid var(--border); border-radius: var(--radius);
+      padding: 22px; display: flex; flex-direction: column; gap: 11px;
+      transition: transform .2s, box-shadow .2s, border-color .2s; cursor: pointer;
+    }
+    .post-card:hover { transform: translateY(-2px); box-shadow: 0 4px 16px rgba(0,0,0,.08); border-color: var(--accent); }
+
+    /* TAGS CLOUD */
+    .tags-cloud { display: flex; flex-wrap: wrap; gap: 10px; }
+    .tag-chip {
+      display: flex; align-items: center; justify-content: space-between; gap: 10px;
+      background: var(--white); border: 1.5px solid var(--border); border-radius: var(--radius);
+      padding: 14px 18px; cursor: pointer; transition: all .2s;
+    }
+    .tag-chip:hover { border-color: var(--accent); background: var(--accent-light); transform: translateY(-2px); }
+    .tag-chip-name { font-weight: 600; font-size: .92rem; }
+    .tag-chip-count {
+      background: var(--border); color: var(--ink-muted);
+      font-size: .72rem; font-weight: 700; padding: 2px 8px; border-radius: 100px;
+    }
+
+    /* SINGLE POST */
+    .post-hero { background: var(--ink); color: var(--cream); padding: 64px 0 48px; }
+    .post-hero-inner { max-width: 760px; }
+    .post-big-title {
+      font-family: var(--font-display); font-size: clamp(1.8rem, 4vw, 3rem);
+      font-weight: 900; line-height: 1.12; letter-spacing: -.03em; margin: 18px 0 14px;
+    }
+    .post-big-excerpt { font-size: 1rem; color: #aaa; line-height: 1.7; max-width: 580px; }
+    .post-meta-bar {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-top: 28px; padding-top: 22px; border-top: 1px solid #222;
+    }
+    .share-btn {
+      background: transparent; border: 1.5px solid #444; color: #aaa;
+      padding: 7px 16px; border-radius: 100px; font-size: .8rem; font-weight: 600;
+      cursor: pointer; transition: all .2s; font-family: var(--font-body);
+    }
+    .share-btn:hover { background: #1a1a1a; color: #fff; border-color: #666; }
+
+    .post-layout { display: grid; grid-template-columns: 1fr 280px; gap: 52px; padding: 52px 0 72px; }
+
+    /* PROSE */
+    .prose { font-size: 1.02rem; line-height: 1.82; color: var(--ink-soft); }
+    .prose h1, .prose h2, .prose h3 {
+      font-family: var(--font-display); color: var(--ink); letter-spacing: -.02em; margin: 1.8em 0 .55em; line-height: 1.2;
+    }
+    .prose h2 { font-size: 1.55rem; border-bottom: 1.5px solid var(--border); padding-bottom: 8px; }
+    .prose h3 { font-size: 1.2rem; }
+    .prose p { margin-bottom: 1.2em; }
+    .prose a { color: #1a56db; text-decoration: underline; text-underline-offset: 3px; }
+    .prose strong { color: var(--ink); font-weight: 600; }
+    .prose ul, .prose ol { margin: 0 0 1.2em 1.4em; }
+    .prose li { margin-bottom: .4em; }
+    .prose blockquote {
+      border-left: 3px solid var(--accent); padding: 10px 18px;
+      margin: 1.4em 0; background: var(--accent-light);
+      border-radius: 0 var(--radius) var(--radius) 0; font-style: italic;
+    }
+    .prose code {
+      font-family: var(--font-mono); background: #f0ede8;
+      padding: 2px 6px; border-radius: 4px; font-size: .86em; color: var(--accent);
+    }
+    .prose pre {
+      background: #1e1e2e; border-radius: var(--radius);
+      padding: 22px; overflow-x: auto; margin: 1.4em 0;
+      box-shadow: 0 4px 20px rgba(0,0,0,.15);
+    }
+    .prose pre code {
+      background: none; border: none; padding: 0;
+      color: #cdd6f4; font-size: .88em; line-height: 1.65;
+    }
+    .prose table { width: 100%; border-collapse: collapse; margin: 1.4em 0; font-size: .88rem; }
+    .prose th { background: var(--ink); color: #fff; padding: 9px 14px; text-align: left; font-family: var(--font-mono); font-size: .76rem; letter-spacing: .05em; }
+    .prose td { padding: 9px 14px; border-bottom: 1px solid var(--border); }
+    .prose tr:nth-child(even) td { background: var(--cream); }
+
+    /* SIDEBAR */
+    .sidebar-sticky { position: sticky; top: 76px; }
+    .sidebar-box {
+      background: var(--white); border: 1.5px solid var(--border);
+      border-radius: var(--radius); padding: 22px; margin-bottom: 18px;
+    }
+    .sidebar-label {
+      font-size: .7rem; font-weight: 700; letter-spacing: .1em;
+      text-transform: uppercase; color: var(--ink-muted); margin-bottom: 14px;
+    }
+    .sidebar-author-bio { font-size: .82rem; color: var(--ink-muted); line-height: 1.5; margin-top: 6px; }
+
+    /* ABOUT */
+    .about-layout { display: grid; grid-template-columns: 1fr 260px; gap: 52px; padding: 52px 0 72px; }
+    .stat-card {
+      background: var(--white); border: 1.5px solid var(--border);
+      border-radius: var(--radius); padding: 24px; text-align: center; margin-bottom: 14px;
+    }
+    .stat-num { font-family: var(--font-display); font-size: 2.8rem; font-weight: 900; color: var(--accent); line-height: 1; }
+    .stat-label { font-size: .8rem; color: var(--ink-muted); font-weight: 500; text-transform: uppercase; letter-spacing: .06em; margin-top: 4px; }
+
+    /* PAGE HERO */
+    .page-hero { background: var(--ink); color: var(--cream); padding: 56px 0 44px; }
+    .page-title { font-family: var(--font-display); font-size: clamp(1.8rem, 4.5vw, 3.2rem); font-weight: 900; letter-spacing: -.03em; margin-bottom: 10px; }
+    .page-sub { color: #aaa; font-size: .95rem; }
+
+    /* TAGS LIST PAGE */
+    .tags-page-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 14px; padding: 44px 0 72px; }
+
+    /* BUTTONS */
+    .btn {
+      display: inline-block; background: var(--ink); color: #fff;
+      padding: 11px 26px; border-radius: 100px; font-weight: 600; font-size: .88rem;
+      transition: background .2s; cursor: pointer; border: none; font-family: var(--font-body);
+    }
+    .btn:hover { background: #333; }
+    .btn--accent { background: var(--accent); }
+    .btn--accent:hover { background: #c73516; }
+
+    /* FOOTER */
+    .footer { border-top: 1.5px solid var(--border); padding: 28px 0; margin-top: 32px; }
+    .footer-inner { max-width: var(--max-w); margin: 0 auto; padding: 0 24px; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+    .footer-brand { display: flex; align-items: center; gap: 8px; font-family: var(--font-display); font-weight: 700; font-size: .95rem; }
+    .footer-copy { font-size: .8rem; color: var(--ink-muted); }
+
+    /* TOAST */
+    .toast {
+      position: fixed; bottom: 28px; right: 28px;
+      background: var(--ink); color: var(--cream);
+      padding: 10px 22px; border-radius: 100px; font-size: .85rem; font-weight: 600;
+      opacity: 0; transform: translateY(10px); transition: all .3s; pointer-events: none; z-index: 999;
+    }
+    .toast.show { opacity: 1; transform: translateY(0); }
+
+    /* BACK BTN */
+    .back-btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      color: #888; font-size: .84rem; font-weight: 500; cursor: pointer;
+      margin-bottom: 20px; transition: color .2s;
+    }
+    .back-btn:hover { color: var(--accent); }
+
+    /* FADE-IN ANIMATION */
+    .fade-in { animation: fadeUp .45s ease both; }
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* RESPONSIVE */
+    @media (max-width: 860px) {
+      .featured-grid { grid-template-columns: 1fr; }
+      .featured-card--dark { grid-row: auto; }
+      .post-layout { grid-template-columns: 1fr; }
+      .about-layout { grid-template-columns: 1fr; }
+      .sidebar-sticky { display: none; }
+    }
+    @media (max-width: 580px) {
+      .nav-links { gap: 16px; }
+      .hero-inner { padding: 44px 20px 36px; }
+      .post-meta-bar { flex-direction: column; align-items: flex-start; gap: 14px; }
+      .footer-inner { flex-direction: column; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="navbar">
+  <div class="nav-inner">
+    <div class="nav-logo" onclick="showPage('home')">
+      <span class="logo-hex">⬡</span>
+      <span>DevPulse</span>
+    </div>
+    <div class="nav-links">
+      <span class="nav-link active" data-page="home" onclick="showPage('home')">Home</span>
+      <span class="nav-link" data-page="topics" onclick="showPage('topics')">Topics</span>
+      <span class="nav-link" data-page="about" onclick="showPage('about')">About</span>
+    </div>
+  </div>
+</nav>
+
+<!-- ===== HOME PAGE ===== -->
+<div id="page-home" class="page active">
+  <section class="hero">
+    <div class="hero-inner">
+      <div class="hero-badge">Engineering · Code · Culture</div>
+      <h1 class="hero-title">Ideas that move<br><em>software forward.</em></h1>
+      <p class="hero-sub">Deep dives, tutorials, and sharp takes from developers building in the open.</p>
+    </div>
+    <div class="hero-ticker">
+      <div class="ticker-track" id="ticker-track"></div>
+    </div>
+  </section>
+
+  <div class="container">
+    <section class="section">
+      <div class="section-header">
+        <h2 class="section-title">Featured</h2>
+        <div class="section-line"></div>
+      </div>
+      <div class="featured-grid" id="featured-grid"></div>
+    </section>
+
+    <section class="section">
+      <div class="section-header">
+        <h2 class="section-title">Latest Posts</h2>
+        <div class="section-line"></div>
+      </div>
+      <div class="posts-grid" id="posts-grid"></div>
+    </section>
+
+    <section class="section">
+      <div class="section-header">
+        <h2 class="section-title">Browse by Topic</h2>
+        <div class="section-line"></div>
+      </div>
+      <div class="tags-cloud" id="home-tags"></div>
+    </section>
+  </div>
+</div>
+
+<!-- ===== POST PAGE ===== -->
+<div id="page-post" class="page">
+  <div class="post-hero">
+    <div class="container">
+      <div class="back-btn" onclick="showPage('home')">← Back</div>
+      <div class="post-hero-inner">
+        <div class="tag-list" id="post-tags"></div>
+        <h1 class="post-big-title" id="post-title"></h1>
+        <p class="post-big-excerpt" id="post-excerpt"></p>
+        <div class="post-meta-bar">
+          <div class="author">
+            <div class="avatar" id="post-avatar"></div>
+            <div>
+              <div class="author-name" id="post-author"></div>
+              <div class="author-date" id="post-date"></div>
+            </div>
+          </div>
+          <button class="share-btn" onclick="copyLink()">Share ↗</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="container">
+    <div class="post-layout">
+      <article class="prose" id="post-content"></article>
+      <aside>
+        <div class="sidebar-sticky">
+          <div class="sidebar-box">
+            <div class="sidebar-label">Topics</div>
+            <div class="tag-list" id="sidebar-tags"></div>
+          </div>
+          <div class="sidebar-box">
+            <div class="sidebar-label">Author</div>
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+              <div class="avatar avatar--lg" id="sidebar-avatar"></div>
+              <strong id="sidebar-author-name"></strong>
+            </div>
+            <p class="sidebar-author-bio">Developer and technical writer sharing insights on modern software engineering.</p>
+          </div>
+        </div>
+      </aside>
+    </div>
+    <div id="related-section"></div>
+  </div>
+</div>
+
+<!-- ===== TOPICS PAGE ===== -->
+<div id="page-topics" class="page">
+  <div class="page-hero">
+    <div class="container">
+      <h1 class="page-title">Browse Topics</h1>
+      <p class="page-sub">Explore posts by technology, language, or concept.</p>
+    </div>
+  </div>
+  <div class="container">
+    <div class="tags-page-grid" id="tags-page-grid"></div>
+  </div>
+</div>
+
+<!-- ===== TAG FILTER PAGE ===== -->
+<div id="page-tag" class="page">
+  <div class="page-hero">
+    <div class="container">
+      <div class="back-btn" onclick="showPage('topics')">← Topics</div>
+      <div class="tag tag--lg" id="tag-hero-label"></div>
+      <h1 class="page-title" id="tag-hero-count"></h1>
+      <p class="page-sub" id="tag-hero-sub"></p>
+    </div>
+  </div>
+  <div class="container" style="padding-bottom:72px">
+    <div class="posts-grid" style="margin-top:40px" id="tag-posts-grid"></div>
+  </div>
+</div>
+
+<!-- ===== ABOUT PAGE ===== -->
+<div id="page-about" class="page">
+  <div class="page-hero">
+    <div class="container">
+      <h1 class="page-title">About DevPulse</h1>
+    </div>
+  </div>
+  <div class="container">
+    <div class="about-layout">
+      <div class="prose">
+        <h2>What is DevPulse?</h2>
+        <p>DevPulse is an independent technical blog focused on software engineering, modern development practices, and the tools and languages shaping how we build software.</p>
+        <p>We write in-depth tutorials, honest opinions, and practical guides — all written by working developers who care deeply about their craft.</p>
+        <h2>Our Topics</h2>
+        <p>We cover the full stack: from systems programming in Rust and Go, to frontend with React and TypeScript, to infrastructure with Docker and PostgreSQL. If it's relevant to a working developer, we write about it.</p>
+        <h2>Want to Contribute?</h2>
+        <p>DevPulse is always looking for thoughtful contributors. If you have a deep-dive tutorial, a hard-won lesson, or a sharp opinion on something in our industry, we'd love to hear from you.</p>
+        <a href="mailto:hello@devpulse.dev" class="btn btn--accent" style="margin-top:8px">Get in Touch</a>
+      </div>
+      <div id="about-stats"></div>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-brand"><span class="logo-hex" style="color:var(--accent)">⬡</span> DevPulse</div>
+    <p class="footer-copy">Pure HTML · CSS · JS &nbsp;·&nbsp; Essays on software &amp; engineering</p>
+  </div>
+</footer>
+
+<div class="toast" id="toast">Link copied!</div>
+
+<script>
+// ===== DATA =====
+const posts = [
+  {
+    id: 1, slug: "rust-2025",
+    title: "Getting Started with Rust in 2025",
+    excerpt: "Rust has taken the systems programming world by storm. Here's everything you need to know to write your first safe, blazing-fast program.",
+    content: `<h2>Why Rust?</h2>
+<p>The core promise of Rust is simple: <strong>no memory bugs, no data races, no undefined behavior</strong> — all checked at compile time. It's consistently topped the "most loved language" charts, and for good reason.</p>
+<h2>Ownership — The Key Concept</h2>
+<p>Every value in Rust has a single owner. When the owner goes out of scope, the value is dropped automatically.</p>
+<pre><code>fn main() {
+    let s1 = String::from("hello");
+    let s2 = s1; // s1 is moved
+    println!("{}", s2); // ✅ Works
+    // println!("{}", s1); // ❌ Error: moved
+}</code></pre>
+<h2>Borrowing</h2>
+<p>Rather than moving ownership, you can <em>borrow</em> references:</p>
+<pre><code>fn calculate_length(s: &String) -> usize {
+    s.len()
+}
+
+fn main() {
+    let s1 = String::from("hello");
+    let len = calculate_length(&s1);
+    println!("Length of '{}' is {}.", s1, len);
+}</code></pre>
+<h2>Getting Started</h2>
+<p>Install Rust via <code>rustup</code>:</p>
+<pre><code>curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh</code></pre>
+<p>Then create your first project:</p>
+<pre><code>cargo new hello_world
+cd hello_world
+cargo run</code></pre>
+<h2>Conclusion</h2>
+<p>Rust has a steep learning curve, but once it clicks, you'll write more correct, faster code than ever before. The compiler is your best friend.</p>`,
+    author: "Alex Chen", authorAvatar: "AC", date: "2025-04-28",
+    readTime: "7 min read", tags: ["Rust", "Systems", "Beginner"], featured: true
+  },
+  {
+    id: 2, slug: "react-server-components",
+    title: "React Server Components: A Deep Dive",
+    excerpt: "Server Components fundamentally change how we think about data fetching and rendering. Let's explore what they are and when to use them.",
+    content: `<h2>What Are Server Components?</h2>
+<p>React Server Components (RSC) execute on the server and send <strong>rendered HTML</strong> to the client — not JavaScript. This means zero bundle size impact and direct database access.</p>
+<pre><code>// Runs ONLY on the server
+async function BlogPost({ id }) {
+  const post = await db.posts.find(id); // Direct DB access!
+  return &lt;article&gt;{post.content}&lt;/article&gt;;
+}</code></pre>
+<h2>Client vs Server Components</h2>
+<table>
+  <tr><th>Feature</th><th>Server</th><th>Client</th></tr>
+  <tr><td>useState</td><td>❌</td><td>✅</td></tr>
+  <tr><td>useEffect</td><td>❌</td><td>✅</td></tr>
+  <tr><td>DB Access</td><td>✅</td><td>❌</td></tr>
+  <tr><td>Bundle size</td><td>0kb</td><td>Counted</td></tr>
+</table>
+<h2>The "use client" Directive</h2>
+<p>Mark interactive components explicitly:</p>
+<pre><code>"use client";
+import { useState } from "react";
+
+export function Counter() {
+  const [count, setCount] = useState(0);
+  return (
+    &lt;button onClick={() =&gt; setCount(c =&gt; c + 1)}&gt;
+      Count: {count}
+    &lt;/button&gt;
+  );
+}</code></pre>
+<h2>Conclusion</h2>
+<p>Server Components aren't a replacement for Client Components — they're complementary. Push as much rendering server-side as possible, reserving client components for truly interactive pieces.</p>`,
+    author: "Maya Patel", authorAvatar: "MP", date: "2025-04-15",
+    readTime: "9 min read", tags: ["React", "Next.js", "Frontend"], featured: true
+  },
+  {
+    id: 3, slug: "docker-compose-production",
+    title: "Docker Compose for Production: Best Practices",
+    excerpt: "Most tutorials show Docker Compose for local dev. With the right config, it's perfectly capable of running production workloads.",
+    content: `<h2>A Production-Ready Compose File</h2>
+<pre><code>services:
+  app:
+    image: myapp:latest
+    restart: unless-stopped
+    ports: ["3000:3000"]
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 30s
+      retries: 3
+
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:</code></pre>
+<h2>Key Practices</h2>
+<p><strong>1. Always set <code>restart: unless-stopped</code></strong> — ensures containers come back after a reboot.</p>
+<p><strong>2. Use healthchecks</strong> — Docker won't mark a container healthy until the healthcheck passes.</p>
+<p><strong>3. Pin image versions</strong> — never use <code>:latest</code> in production.</p>
+<h2>Deploying Updates</h2>
+<pre><code>docker compose pull
+docker compose up -d --no-deps --build app</code></pre>
+<p>The <code>--no-deps</code> flag updates only your app container, leaving the database untouched.</p>
+<h2>Conclusion</h2>
+<p>For teams that don't need Kubernetes complexity, Docker Compose strikes the perfect balance of simplicity and reliability.</p>`,
+    author: "Sam Torres", authorAvatar: "ST", date: "2025-03-30",
+    readTime: "6 min read", tags: ["Docker", "DevOps", "Production"], featured: false
+  },
+  {
+    id: 4, slug: "typescript-5-features",
+    title: "TypeScript 5.x: The Features That Matter",
+    excerpt: "TypeScript keeps shipping quality-of-life improvements. Here are the features from the 5.x series that will actually change how you write code.",
+    content: `<h2>Decorators — The Standard Way</h2>
+<p>TypeScript 5.0 ships decorators following the TC39 standard — no more <code>experimentalDecorators</code>.</p>
+<pre><code>function logged(target: any, context: ClassMethodDecoratorContext) {
+  return function (this: any, ...args: any[]) {
+    console.log(\`Calling \${String(context.name)}\`);
+    return target.call(this, ...args);
+  };
+}
+
+class UserService {
+  @logged
+  getUser(id: string) { return { id, name: "Alice" }; }
+}</code></pre>
+<h2>const Type Parameters</h2>
+<pre><code>function identity&lt;const T&gt;(value: T): T { return value; }
+
+const result = identity(["a", "b", "c"]);
+// Type: readonly ["a", "b", "c"] — not string[]!</code></pre>
+<h2>Better satisfies Usage</h2>
+<pre><code>const palette = {
+  red: [255, 0, 0],
+  green: "#00ff00",
+} satisfies Record&lt;string, string | number[]&gt;;
+
+palette.red.map(v =&gt; v * 2); // ✅ TypeScript knows it's number[]</code></pre>
+<h2>Conclusion</h2>
+<p>Standard decorators alone justify upgrading. Paired with <code>const</code> type parameters, your types will be dramatically more precise.</p>`,
+    author: "Alex Chen", authorAvatar: "AC", date: "2025-03-10",
+    readTime: "5 min read", tags: ["TypeScript", "JavaScript", "Frontend"], featured: false
+  },
+  {
+    id: 5, slug: "cli-tools-with-go",
+    title: "Building Beautiful CLI Tools with Go",
+    excerpt: "Go's static binaries and excellent stdlib make it ideal for CLI tools. Learn how to build polished, user-friendly command-line applications.",
+    content: `<h2>Why Go for CLIs?</h2>
+<p>Go produces single static binaries with no runtime dependencies. Ship one file, works everywhere. The ecosystem is excellent too.</p>
+<h2>Project Setup</h2>
+<pre><code>go mod init github.com/yourname/mytool
+go get github.com/spf13/cobra
+go get github.com/charmbracelet/lipgloss</code></pre>
+<h2>A Basic Command with Cobra</h2>
+<pre><code>var greetCmd = &cobra.Command{
+    Use:   "greet [name]",
+    Short: "Greet someone",
+    Args:  cobra.ExactArgs(1),
+    Run: func(cmd *cobra.Command, args []string) {
+        fmt.Printf("Hello, %s!\\n", args[0])
+    },
+}
+
+func main() {
+    rootCmd.AddCommand(greetCmd)
+    rootCmd.Execute()
+}</code></pre>
+<h2>Beautiful Output with Lipgloss</h2>
+<pre><code>var style = lipgloss.NewStyle().
+    Bold(true).
+    Foreground(lipgloss.Color("#FF5F87")).
+    PaddingLeft(4).PaddingRight(4)
+
+fmt.Println(style.Render("Hello from your CLI!"))</code></pre>
+<h2>Building & Distributing</h2>
+<pre><code># Cross-compile for Linux
+GOOS=linux GOARCH=amd64 go build -o mytool-linux .
+
+# Cross-compile for Windows
+GOOS=windows GOARCH=amd64 go build -o mytool.exe .</code></pre>`,
+    author: "Jordan Kim", authorAvatar: "JK", date: "2025-02-20",
+    readTime: "8 min read", tags: ["Go", "CLI", "Tools"], featured: false
+  },
+  {
+    id: 6, slug: "postgres-performance",
+    title: "PostgreSQL Performance: 10 Tips That Actually Work",
+    excerpt: "After running Postgres in production for years, these are the optimizations that moved the needle. No fluff, just results.",
+    content: `<h2>1. Use EXPLAIN ANALYZE</h2>
+<pre><code>EXPLAIN (ANALYZE, BUFFERS, FORMAT TEXT)
+SELECT * FROM users WHERE email = 'test@example.com';</code></pre>
+<p>The <code>BUFFERS</code> option shows cache hits vs disk reads — often the key insight.</p>
+<h2>2. Index What You Query</h2>
+<pre><code>-- Standard index
+CREATE INDEX CONCURRENTLY idx_users_email ON users(email);
+
+-- Partial index (only active users)
+CREATE INDEX CONCURRENTLY idx_active_users
+ON users(created_at) WHERE active = true;</code></pre>
+<h2>3. Tune shared_buffers</h2>
+<p>Set it to 25% of RAM in <code>postgresql.conf</code>:</p>
+<pre><code>shared_buffers = 4GB  # for a 16GB server</code></pre>
+<h2>4. Use Connection Pooling</h2>
+<p>Each Postgres connection uses ~5–10MB RAM. At 500 connections, that's 5GB just for connections. PgBouncer multiplexes thousands of app connections into a handful of real DB connections.</p>
+<h2>5. Avoid SELECT *</h2>
+<pre><code>-- Bad: fetches all columns, defeats index-only scans
+SELECT * FROM users WHERE id = 1;
+
+-- Good: fetch only what you need
+SELECT id, name, email FROM users WHERE id = 1;</code></pre>
+<h2>Conclusion</h2>
+<p>Start with EXPLAIN ANALYZE, add indexes, tune memory, then add connection pooling. Most apps see 10–100× improvements from just these steps.</p>`,
+    author: "Maya Patel", authorAvatar: "MP", date: "2025-02-05",
+    readTime: "10 min read", tags: ["PostgreSQL", "Database", "Performance"], featured: false
+  }
+];
+
+// ===== HELPERS =====
+function fmt(dateStr) {
+  return new Date(dateStr).toLocaleDateString("en-US", { year:"numeric", month:"short", day:"numeric" });
+}
+
+function allTags() {
+  const map = {};
+  posts.forEach(p => p.tags.forEach(t => { map[t] = (map[t]||0)+1; }));
+  return map;
+}
+
+// ===== PAGE ROUTER =====
+let currentTag = null;
+
+function showPage(name, data) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-' + name).classList.add('active');
+  document.querySelectorAll('.nav-link').forEach(l => {
+    l.classList.toggle('active', l.dataset.page === name);
+  });
+  window.scrollTo(0, 0);
+
+  if (name === 'post' && data) renderPost(data);
+  if (name === 'tag' && data) renderTagPage(data);
+  if (name === 'topics') renderTopicsPage();
+  if (name === 'about') renderAbout();
+}
+
+// ===== RENDER HOME =====
+function renderHome() {
+  // Ticker
+  const tags = Object.keys(allTags());
+  const tickerStr = (tags.map(t => `· ${t}`).join(' ') + ' ').repeat(4);
+  document.getElementById('ticker-track').textContent = tickerStr;
+
+  // Featured
+  const featured = posts.filter(p => p.featured);
+  document.getElementById('featured-grid').innerHTML = featured.map((p, i) => `
+    <article class="featured-card ${i === 0 ? 'featured-card--dark' : ''} fade-in" onclick="showPage('post', ${p.id})" style="animation-delay:${i*60}ms">
+      <div class="card-top">
+        <div class="tag-list">${p.tags.map(t => `<span class="tag">${t}</span>`).join('')}</div>
+        <span class="read-time">${p.readTime}</span>
+      </div>
+      <h2 class="card-title"><a>${p.title}</a></h2>
+      <p class="card-excerpt">${p.excerpt}</p>
+      <div class="card-footer">
+        <div class="author">
+          <div class="avatar">${p.authorAvatar}</div>
+          <div><div class="author-name">${p.author}</div><div class="author-date">${fmt(p.date)}</div></div>
+        </div>
+        <span class="read-more">Read →</span>
+      </div>
+    </article>`).join('');
+
+  // Recent
+  const recent = posts.filter(p => !p.featured);
+  document.getElementById('posts-grid').innerHTML = recent.map((p, i) => postCardHTML(p, i)).join('');
+
+  // Tags
+  document.getElementById('home-tags').innerHTML = Object.entries(allTags())
+    .map(([t]) => `<span class="tag tag--lg" onclick="showPage('tag','${t}')">${t}</span>`).join('');
+}
+
+function postCardHTML(p, i = 0) {
+  return `
+    <article class="post-card fade-in" onclick="showPage('post', ${p.id})" style="animation-delay:${i*50}ms">
+      <div class="card-top">
+        <div class="tag-list">${p.tags.slice(0,2).map(t=>`<span class="tag">${t}</span>`).join('')}</div>
+        <span class="read-time">${p.readTime}</span>
+      </div>
+      <h3 class="card-title card-title--sm"><a>${p.title}</a></h3>
+      <p class="card-excerpt card-excerpt--sm">${p.excerpt}</p>
+      <div class="card-footer">
+        <div class="author">
+          <div class="avatar avatar--sm">${p.authorAvatar}</div>
+          <span class="author-name" style="font-size:.8rem">${p.author} · ${fmt(p.date)}</span>
+        </div>
+      </div>
+    </article>`;
+}
+
+// ===== RENDER POST =====
+function renderPost(id) {
+  const p = posts.find(x => x.id === id);
+  if (!p) return;
+
+  document.getElementById('post-tags').innerHTML = p.tags.map(t => `<span class="tag" onclick="showPage('tag','${t}')">${t}</span>`).join('');
+  document.getElementById('post-title').textContent = p.title;
+  document.getElementById('post-excerpt').textContent = p.excerpt;
+  document.getElementById('post-avatar').textContent = p.authorAvatar;
+  document.getElementById('post-author').textContent = p.author;
+  document.getElementById('post-date').textContent = `${fmt(p.date)} · ${p.readTime}`;
+  document.getElementById('post-content').innerHTML = p.content;
+  document.getElementById('sidebar-tags').innerHTML = p.tags.map(t => `<span class="tag tag--lg" onclick="showPage('tag','${t}')">${t}</span>`).join('');
+  document.getElementById('sidebar-avatar').textContent = p.authorAvatar;
+  document.getElementById('sidebar-author-name').textContent = p.author;
+
+  const related = posts.filter(x => x.id !== p.id && x.tags.some(t => p.tags.includes(t))).slice(0,2);
+  document.getElementById('related-section').innerHTML = related.length ? `
+    <div style="border-top:1.5px solid var(--border);padding-top:48px;padding-bottom:72px">
+      <div class="section-header"><h2 class="section-title">Related Posts</h2><div class="section-line"></div></div>
+      <div class="posts-grid">${related.map(postCardHTML).join('')}</div>
+    </div>` : '';
+}
+
+// ===== RENDER TOPICS =====
+function renderTopicsPage() {
+  const map = allTags();
+  document.getElementById('tags-page-grid').innerHTML = Object.entries(map)
+    .sort((a,b) => b[1]-a[1])
+    .map(([t,c]) => `
+      <div class="tag-chip fade-in" onclick="showPage('tag','${t}')">
+        <span class="tag-chip-name">${t}</span>
+        <span class="tag-chip-count">${c}</span>
+      </div>`).join('');
+}
+
+// ===== RENDER TAG PAGE =====
+function renderTagPage(tag) {
+  currentTag = tag;
+  const filtered = posts.filter(p => p.tags.includes(tag));
+  document.getElementById('tag-hero-label').textContent = tag;
+  document.getElementById('tag-hero-count').textContent = `${filtered.length} post${filtered.length !== 1 ? 's' : ''}`;
+  document.getElementById('tag-hero-sub').textContent = `All articles tagged with "${tag}"`;
+  document.getElementById('tag-posts-grid').innerHTML = filtered.map(postCardHTML).join('');
+}
+
+// ===== RENDER ABOUT =====
+function renderAbout() {
+  const authors = [...new Set(posts.map(p => p.author))].length;
+  const topicCount = Object.keys(allTags()).length;
+  document.getElementById('about-stats').innerHTML = [
+    [posts.length, 'Articles Published'],
+    [authors, 'Contributors'],
+    [topicCount, 'Topics Covered']
+  ].map(([n,l]) => `
+    <div class="stat-card">
+      <div class="stat-num">${n}</div>
+      <div class="stat-label">${l}</div>
+    </div>`).join('');
+}
+
+// ===== SHARE =====
+function copyLink() {
+  navigator.clipboard.writeText(window.location.href).catch(() => {});
+  const t = document.getElementById('toast');
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+// ===== INIT =====
+renderHome();
+</script>
+</body>
+</html>
